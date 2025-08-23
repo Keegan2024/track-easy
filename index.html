@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Pickup Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Main Menu Styles */
+        .main-menu {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .menu-toggle {
+            background: rgba(255,255,255,0.95);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .hamburger {
+            width: 20px;
+            height: 20px;
+            position: relative;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: #2c3e50;
+            margin: 4px 0;
+            transition: 0.3s;
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 999;
+        }
+
+        .menu-content {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100%;
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            transition: left 0.3s ease;
+            z-index: 1001;
+            padding: 60px 20px 20px;
+            box-shadow: 5px 0 20px rgba(0,0,0,0.3);
+        }
+
+        .menu-content.active {
+            left: 0;
+        }
+
+        .menu-item {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .menu-item:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(10px);
+        }
+
+        .menu-item.active {
+            background: rgba(255,255,255,0.3);
+            font-weight: bold;
+        }
+
+        .close-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Back Button */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.95);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-weight: 600;
+            color: #2c3e50;
+            transition: all 0.3s ease;
+            display: none;
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .back-button.show {
+            display: block;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: none;
+        }
+
+        .controls.show {
+            display: block;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 12px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            width: 300px;
+            max-width: 100%;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .download-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .download-excel {
+            background: #28a745;
+            color: white;
+        }
+
+        .download-excel:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .download-pdf {
+            background: #dc3545;
+            color: white;
+        }
+
+        .download-pdf:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px 30px;
+            background: #f8f9fa;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-card.index-card {
+            border-left-color: #e74c3c;
+        }
+
+        .stat-card.vl-card {
+            border-left-color: #f39c12;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .client-list {
+            display: none;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .client-list.show {
+            display: block;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: linear-gradient(135deg, #34495e, #2c3e50);
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.2s ease;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .phone {
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .art-number {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .serial-number {
+            font-weight: bold;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .date {
+            white-space: nowrap;
+        }
+
+        .no-clients {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .index-badge {
+            background: #ffeaa7;
+            color: #e17055;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .vl-badge-table {
+            background: #ffd32a;
+            color: #f39c12;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .vl-badge {
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .vl-badge.vl-y {
+            background: #ffd32a;
+            color: #f39c12;
+        }
+
+        .vl-badge.vl-n {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .dashboard-content {
+            display: block;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .dashboard-content.hide {
+            display: none;
+        }
+
+        .welcome-message {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-info {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .controls {
+                padding: 20px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+
+            .stats {
+                padding: 15px 20px;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            th, td {
+                padding: 8px 5px;
+            }
+
+            .menu-content {
+                width: 250px;
+            }
+
+            .table-container::after {
+                content: "← Swipe to see more →";
+                display: block;
+                text-align: center;
+                padding: 10px;
+                color: #7f8c8d;
+                font-size: 0.8rem;
+                font-style: italic;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 0;
+                margin: -10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        .client-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .client-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .client-list::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        .client-list::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Menu -->
+    <div class="main-menu">
+        <button class="menu-toggle" onclick="toggleMainMenu()">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </button>
+    </div>
+
+    <div class="menu-overlay" onclick="closeMainMenu()"></div>
+    <div class="menu-content">
+        <button class="close-menu" onclick="closeMainMenu()">×</button>
+        <button class="menu-item active" onclick="navigateToSection('dashboard')">🏠 Main Dashboard</button>
+        <button class="menu-item" onclick="navigateToSection('pharmacy')">💊 Pharmacy Pickup</button>
+        <button class="menu-item" onclick="navigateToSection('vl')">🧪 Viral Load Due</button>
+        <button class="menu-item" onclick="navigateToSection('index')">📊 Index Backlog</button>
+    </div>
+
+    <div class="container">
+        <button class="back-button" onclick="goBack()">← Back to Dashboard</button>
+        
+        <div class="header">
+            <h1 id="headerTitle">Pharmacy Pickup Dashboard</h1>
+            <p id="headerSubtitle">Manage and track pending pharmacy pickups</p>
+        </div>
+
+        <div class="stats" id="statsSection">
+            <div class="stat-card">
+                <div class="stat-number" id="totalClients">0</div>
+                <div class="stat-label">Total Clients</div>
+            </div>
+            <div class="stat-card vl-card">
+                <div class="stat-number" id="vlDue">0</div>
+                <div class="stat-label">Due for VL</div>
+            </div>
+            <div class="stat-card index-card">
+                <div class="stat-number" id="indexBacklog">0</div>
+                <div class="stat-label">Index Backlog</div>
+            </div>
+        </div>
+
+        <div class="dashboard-content" id="dashboardContent">
+            <div class="welcome-message">
+                Welcome to the Pharmacy Pickup Dashboard
+            </div>
+            <div class="dashboard-info">
+                <p>Use the menu button (☰) in the top-left corner to navigate to different sections:</p>
+                <br>
+                <p><strong>💊 Pharmacy Pickup:</strong> View and manage pending pharmacy pickups</p>
+                <p><strong>🧪 Viral Load Due:</strong> Track clients due for viral load testing</p>
+                <p><strong>📊 Index Backlog:</strong> Monitor clients in the index backlog queue</p>
+                <br>
+                <p>Each section provides search functionality and export options for Excel and PDF formats.</p>
+            </div>
+        </div>
+
+        <div class="controls" id="controlsSection">
+            <div class="btn-container">
+                <input type="text" class="search-box" placeholder="Search by name, location, or ART number..." 
+                       onkeyup="searchClients()" id="searchInput">
+                <button class="download-btn download-excel" onclick="downloadExcel()">📊 Download Excel</button>
+                <button class="download-btn download-pdf" onclick="downloadPDF()">📄 Download PDF</button>
+            </div>
+        </div>
+
+        <div class="client-list" id="clientList">
+            <div class="table-container">
+                <table id="clientTable">
+                    <thead>
+                        <tr id="tableHeaders">
+                            <!-- Headers will be populated dynamically -->
+                        </tr>
+                    </thead>
+                    <tbody id="clientTableBody">
+                        <!-- Client data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const clientsData = [
+            {"name": "PHIRI, MOSES", "phone": "", "address": "CHIFWALO", "artNumber": "4010-00050-003749-3", "nextVisit": "23-Jul-25", "vlDue": "Y"},
+            {"name": "MUSONDA, PATIENCE", "phone": "", "address": "CHIBULE", "artNumber": "4010-00050-005177-0", "nextVisit": "23-Jul-25", "vlDue": "N"},
+            {"name": "CHONGO, IREEN", "phone": "", "address": "LUPILI", "artNumber": "4006-0006-000627-5", "nextVisit": "24-Jul-25", "vlDue": "N"},
+            {"name": "MWILA, EVANS", "phone": "", "address": "CHISHIMA", "artNumber": "4010-00050-005690-0", "nextVisit": "25-Jul-25", "vlDue": "N"},
+            {"name": "BWALYA, FEBBY", "phone": "0976909534", "address": "KEFULWA", "artNumber": "5004-0024-016725-1", "nextVisit": "25-Jul-25", "vlDue": "N"},
+            {"name": "LUBUNDA, KELVIN", "phone": "", "address": "CHISHIMA", "artNumber": "4010-00050-004661-7", "nextVisit": "27-Jul-25", "vlDue": "N"},
+            {"name": "CHILOMBO, DYNAH", "phone": "", "address": "KAPELA", "artNumber": "4010-XX18-006042-2", "nextVisit": "29-Jul-25", "vlDue": "N"},
+            {"name": "KOMBE, GLADYS", "phone": "0776370340", "address": "CHAFUMA", "artNumber": "4010-00050-005792-3", "nextVisit": "29-Jul-25", "vlDue": "Y"},
+            {"name": "CHOLA, JOHN", "phone": "0976883540", "address": "MUTABWA", "artNumber": "4010-00050-005483-0", "nextVisit": "30-Jul-25", "vlDue": "Y"},
+            {"name": "ZULU, MANDA", "phone": "", "address": "LUPILI", "artNumber": "4060-130-01233-9", "nextVisit": "30-Jul-25", "vlDue": "N"},
+            {"name": "CHIKUMBI, MPUNDU", "phone": "", "address": "KAPELA", "artNumber": "4060-130-01828-9", "nextVisit": "30-Jul-25", "vlDue": "N"},
+            {"name": "KAMONA, AGNESS", "phone": "", "address": "KEPI", "artNumber": "4010-00050-005300-8", "nextVisit": "30-Jul-25", "vlDue": "Y"},
+            {"name": "NGOI, ELIZABETH", "phone": "0978530337", "address": "MULONDA", "artNumber": "4010-00050-005697-7", "nextVisit": "31-Jul-25", "vlDue": "N"},
+            {"name": "MWILA, HONE", "phone": "", "address": "DAIMON", "artNumber": "4010-00050-005676-4", "nextVisit": "31-Jul-25", "vlDue": "N"},
+            {"name": "KABASO, ROSE", "phone": "", "address": "SHISELI", "artNumber": "4010-00050-001602-9", "nextVisit": "01-Aug-25", "vlDue": "Y"},
+            {"name": "BWALYA, SUNDAY", "phone": "", "address": "CHILE", "artNumber": "4060-130-001622-1", "nextVisit": "01-Aug-25", "vlDue": "Y"},
+            {"name": "CHINYANTA, DORIS", "phone": "", "address": "CHIFWALO", "artNumber": "4010-00050-005723-7", "nextVisit": "02-Aug-25", "vlDue": "N"},
+            {"name": "NSOFWA, MAGGIE", "phone": "", "address": "CHIFWALO", "artNumber": "4010-00050-005092-6", "nextVisit": "02-Aug-25", "vlDue": "Y"},
+            {"name": "MUSAMA, HILDAH", "phone": "", "address": "CHISHIMBA", "artNumber": "4060-130-003259-9", "nextVisit": "02-Aug-25", "vlDue": "Y"},
+            {"name": "CHOMBA, PURITY", "phone": "", "address": "KAYOPE", "artNumber": "4060-130-03017-1", "nextVisit": "02-Aug-25", "vlDue": "N"},
+            {"name": "KAFWIMBI, MARY", "phone": "", "address": "MUSAMA", "artNumber": "4010-0019-005494-2", "nextVisit": "02-Aug-25", "vlDue": "N"},
+            {"name": "CHAMA, LIDIA", "phone": "", "address": "CHULA", "artNumber": "4010-00050-004998-0", "nextVisit": "02-Aug-25", "vlDue": "Y"},
+            {"name": "CHISHIMBA, JANE", "phone": "", "address": "KAYOPE", "artNumber": "4010-00050-005889-0", "nextVisit": "05-Aug-25", "vlDue": "Y"},
+            {"name": "MWELWA, IREEN", "phone": "", "address": "KEPI", "artNumber": "4060-130-01946-0", "nextVisit": "05-Aug-25", "vlDue": "N"},
+            {"name": "MWAPE, GWEN", "phone": "", "address": "CHILE", "artNumber": "4002-0009-000551-1", "nextVisit": "08-Aug-25", "vlDue": "Y"},
+            {"name": "NSAMA, JUDITH", "phone": "", "address": "SHISELI", "artNumber": "4060-130-02019-2", "nextVisit": "10-Aug-25", "vlDue": "N"},
+            {"name": "KAPAMBWE, LEWIS", "phone": "0779712087", "address": "KAYOPE", "artNumber": "4010-00050-005891-3", "nextVisit": "10-Aug-25", "vlDue": "Y"},
+            {"name": "KAMBALAMA, DERRICK", "phone": "", "address": "KAYOPE", "artNumber": "4010-110-00645-5", "nextVisit": "10-Aug-25", "vlDue": "N"},
+            {"name": "MULENGA, NAOMI", "phone": "0776160701", "address": "KEEPI", "artNumber": "4010-0019-006068-0", "nextVisit": "10-Aug-25", "vlDue": "Y"},
+            {"name": "MWILA, ESIYA", "phone": "", "address": "SHISELI", "artNumber": "4010-00050-000696-1", "nextVisit": "10-Aug-25", "vlDue": "Y"},
+            {"name": "CHOLA, DAVIES", "phone": "", "address": "SEKELETI", "artNumber": "4010-00050-005679-7", "nextVisit": "11-Aug-25", "vlDue": "N"},
+            {"name": "KAPOTWE, CELESTIAL", "phone": "", "address": "", "artNumber": "4060-130-00178-6", "nextVisit": "11-Aug-25", "vlDue": "N"},
+            {"name": "CHISHALA, COSTER", "phone": "", "address": "KAYPE", "artNumber": "4010-00050-005915-0", "nextVisit": "12-Aug-25", "vlDue": "Y"},
+            {"name": "MUKUPA, THERESA", "phone": "0772942418", "address": "MUTABWA", "artNumber": "4010-00050-005894-6", "nextVisit": "12-Aug-25", "vlDue": "Y"},
+            {"name": "MWAPE, MEMORY", "phone": "", "address": "SEKELETI", "artNumber": "4060-130-002819-0", "nextVisit": "12-Aug-25", "vlDue": "Y"},
+            {"name": "CHANSA, MICAH", "phone": "", "address": "SHISELI", "artNumber": "4060-130-00116-8", "nextVisit": "13-Aug-25", "vlDue": "Y"},
+            {"name": "MUBANGA, FELIX", "phone": "", "address": "CHISHIMA", "artNumber": "4010-00050-005943-1", "nextVisit": "14-Aug-25", "vlDue": "N"},
+            {"name": "KABUYA, JOHN", "phone": "", "address": "CHILE", "artNumber": "4010-00050-005942-0", "nextVisit": "14-Aug-25", "vlDue": "N"},
+            {"name": "CHANSA, GIDEON", "phone": "", "address": "MULONDA", "artNumber": "4010-00050-005948-6", "nextVisit": "14-Aug-25", "vlDue": "N"},
+            {"name": "KALUMBA, PRUDENCE", "phone": "", "address": "DAIMON", "artNumber": "4010-00050-004008-2", "nextVisit": "14-Aug-25", "vlDue": "N"},
+            {"name": "CHISHIMBA, JUSTINA", "phone": "", "address": "MUTABWA", "artNumber": "4010-00050-005442-5", "nextVisit": "14-Aug-25", "vlDue": "N"},
+            {"name": "CHAMA, LEVY", "phone": "", "address": "MUTABWA", "artNumber": "4010-00050-005632-6", "nextVisit": "14-Aug-25", "vlDue": "Y"},
+            {"name": "CHENDA, MARY", "phone": "", "address": "SAMASHI", "artNumber": "4010-00050-004356-8", "nextVisit": "14-Aug-25", "vlDue": "N"},
+            {"name": "MWANGO, SILVIA", "phone": "", "address": "CHAFUMA", "artNumber": "4010-00050-005895-7", "nextVisit": "14-Aug-25", "vlDue": "N"},
+            {"name": "KAKONGE, CECILIA", "phone": "", "address": "CHISHIMA", "artNumber": "4010-00050-001756-9", "nextVisit": "16-Aug-25", "vlDue": "Y"},
+            {"name": "MWANSA, ROSE", "phone": "", "address": "CHIBULE", "artNumber": "4010-00050-005501-1", "nextVisit": "17-Aug-25", "vlDue": "Y"},
+            {"name": "MPUNDU, JACKSON", "phone": "", "address": "CHILE", "artNumber": "4010-00050-005918-3", "nextVisit": "17-Aug-25", "vlDue": "Y"},
+            {"name": "MULENGA, CHRISTOPHER", "phone": "", "address": "MULANGA", "artNumber": "4010-00050-004410-9", "nextVisit": "17-Aug-25", "vlDue": "N"},
+            {"name": "CHUNGU, SANI", "phone": "", "address": "CHIFWALO", "artNumber": "4010-00050-001762-6", "nextVisit": "17-Aug-25", "vlDue": "Y"},
+            {"name": "MULENGA, COSMAS", "phone": "", "address": "CHISHIMA", "artNumber": "4060-130-003247-", "nextVisit": "18-Aug-25", "vlDue": "N"},
+            {"name": "NSAMA, HOJONI", "phone": "0972307017", "address": "KAKOLWE", "artNumber": "4010-00050-004529-0", "nextVisit": "19-Aug-25", "vlDue": "N"},
+            {"name": "MUMBA, MARY", "phone": "", "address": "CHIFWALO", "artNumber": "4010-00050-003663-8", "nextVisit": "19-Aug-25", "vlDue": "N"},
+            {"name": "MWELWA, PRECIOUS", "phone": "", "address": "CHIBULE", "artNumber": "4060-130-02108-1", "nextVisit": "19-Aug-25", "vlDue": "N"},
+            {"name": "CHIBESA, CHARITY", "phone": "", "address": "MUTABWA", "artNumber": "4010-00050-005761-9", "nextVisit": "19-Aug-25", "vlDue": "Y"},
+            {"name": "CHISHIMBA, HARRIET", "phone": "", "address": "CHISHIMA", "artNumber": "4010-00050-005852-0", "nextVisit": "20-Aug-25", "vlDue": "Y"},
+            {"name": "KASONGO, OSIYA", "phone": "", "address": "KAYOPE", "artNumber": "4010-00050-005858-6", "nextVisit": "20-Aug-25", "vlDue": "Y"},
+            {"name": "TEMBO, PHILIP", "phone": "", "address": "SEKELETI", "artNumber": "4010-00050-003426-5", "nextVisit": "20-Aug-25", "vlDue": "Y"}
+        ];
+
+        const indexBacklogData = [
+            {"name": "HELLEN MULENGA", "phone": "", "address": "CHIFWALO", "artNumber": "5956"},
+            {"name": "ALICE MUSONDA", "phone": "", "address": "KEPI", "artNumber": "5957"},
+            {"name": "KINGS MUSUKU", "phone": "", "address": "MULONDA", "artNumber": "5959"},
+            {"name": "DYNESS MATANDA", "phone": "", "address": "KAPUTO", "artNumber": "5965"},
+            {"name": "ROYDAH MUSONDA", "phone": "", "address": "CHISHIMA", "artNumber": "5966"},
+            {"name": "LILLIAN MWABA", "phone": "", "address": "SEKELETI", "artNumber": "5320"},
+            {"name": "FEBBY CHONGO", "phone": "", "address": "SEKELETI", "artNumber": "5439"},
+            {"name": "AGNESS MANDA", "phone": "", "address": "CHISHIMA", "artNumber": "2248"},
+            {"name": "JANET CHIBWE", "phone": "", "address": "CHISHIMA", "artNumber": "3892"},
+            {"name": "GIVEN KASANGULA", "phone": "", "address": "CHISHIMA", "artNumber": "4049"},
+            {"name": "MIRRIAM KASONGO", "phone": "", "address": "KAYOPE", "artNumber": "5854"},
+            {"name": "MABLE MWABA", "phone": "", "address": "KAYOPE", "artNumber": "5541"},
+            {"name": "PRESCOVIA NKANDU", "phone": "", "address": "CHISHIMA", "artNumber": "5206"},
+            {"name": "JOSEPH MWAPE", "phone": "", "address": "MUTABWA", "artNumber": "4589"},
+            {"name": "MADRIN MUSONDA", "phone": "", "address": "MUTABWA", "artNumber": "3653"},
+            {"name": "ASTRIDAH CHIPAMPE", "phone": "", "address": "KANDEKE", "artNumber": "4180"}
+        ];
+
+        const vlDueData = [
+            {"name": "CHISHIMBA ANDREW", "phone": "", "address": "", "artNumber": "4010-00050-004372-6", "sex": "M"},
+            {"name": "CHISHALA BRIDGET", "phone": "", "address": "", "artNumber": "4010-00050-001875-1", "sex": "F"},
+            {"name": "CHUNGU ESTHER", "phone": "", "address": "", "artNumber": "4010-00050-001776-1", "sex": "F"},
+            {"name": "MULENGA THOMAS", "phone": "", "address": "", "artNumber": "4060-130-01839-1", "sex": "M"},
+            {"name": "KASONGO ASTRIDA", "phone": "", "address": "", "artNumber": "4010-00050-005601-2", "sex": "F"},
+            {"name": "MWILA PHALES", "phone": "", "address": "", "artNumber": "4010-00050-005389-5", "sex": "M"},
+            {"name": "PANDE CASTROL", "phone": "", "address": "", "artNumber": "4060-130-002784-1", "sex": "M"},
+            {"name": "MWILA DAVIES", "phone": "", "address": "", "artNumber": "4060-130-03078-8", "sex": "M"},
+            {"name": "MUSONDA JULIUS", "phone": "", "address": "", "artNumber": "4002-000-003248-7", "sex": "M"},
+            {"name": "MULELE DYNESS", "phone": "", "address": "", "artNumber": "4010-00050-005260-3", "sex": "F"},
+            {"name": "CHIBWE PETER KAZEMBE", "phone": "", "address": "", "artNumber": "4010-00050-004434-5", "sex": "M"},
+            {"name": "KAUNDA COSMAS", "phone": "", "address": "", "artNumber": "4010-00050-004740-5", "sex": "M"},
+            {"name": "KALUMBA RENARD", "phone": "", "address": "", "artNumber": "4060-130-002936-0", "sex": "M"},
+            {"name": "CHIPILI GOODWELL", "phone": "", "address": "", "artNumber": "4010-00050-005220-9", "sex": "M"},
+            {"name": "KAITE BENARD", "phone": "", "address": "", "artNumber": "4002-0001-001324-0", "sex": "M"},
+            {"name": "BUPE MARY", "phone": "", "address": "", "artNumber": "4010-00050-005766-4", "sex": "F"},
+            {"name": "KALUBA PAUL", "phone": "", "address": "", "artNumber": "4002-0011-002277-8", "sex": "M"},
+            {"name": "KALIMBA ROSE", "phone": "", "address": "", "artNumber": "4010-00050-005542-6", "sex": "F"},
+            {"name": "KOMBE JOSEPHINE", "phone": "", "address": "", "artNumber": "4060-130-02021-5", "sex": "F"},
+            {"name": "MWENYA PRUDENCE", "phone": "", "address": "", "artNumber": "4010-00050-005706-8", "sex": "F"},
+            {"name": "MUMBA CHRISTINE", "phone": "", "address": "", "artNumber": "4060-130-02297-0", "sex": "F"},
+            {"name": "MWALE JANE", "phone": "", "address": "", "artNumber": "4060-130-02493-8", "sex": "F"},
+            {"name": "CHABU DYNES", "phone": "", "address": "", "artNumber": "4010-00050-005279-3", "sex": "F"},
+            {"name": "KALABA MAGGIE", "phone": "", "address": "", "artNumber": "4010-00050-004967-6", "sex": "F"},
+            {"name": "KAITE NARA", "phone": "", "address": "", "artNumber": "4010-00050-005673-1", "sex": "F"},
+            {"name": "MUKANSO JOHN", "phone": "", "address": "", "artNumber": "4060-130-02090-1", "sex": "M"},
+            {"name": "CHUNGU AMON", "phone": "", "address": "", "artNumber": "4010-00050-001683-8", "sex": "M"},
+            {"name": "KASANGULA GIVEN", "phone": "", "address": "", "artNumber": "4010-00050-004049-7", "sex": "F"},
+            {"name": "MWANSA ROSE", "phone": "", "address": "", "artNumber": "4060-130-00207-9", "sex": "F"},
+            {"name": "TUNDWA JUDITH", "phone": "", "address": "", "artNumber": "4010-00050-003615-5", "sex": "F"},
+            {"name": "CHAMA FOSTER", "phone": "", "address": "", "artNumber": "4010-00050-005935-2", "sex": "F"},
+            {"name": "KABEKA CHARLES", "phone": "", "address": "", "artNumber": "4010-00050-004893-4", "sex": "M"},
+            {"name": "CHANDA FLORENCE", "phone": "", "address": "", "artNumber": "4010-00050-004949-6", "sex": "F"},
+            {"name": "KABASO MARY", "phone": "", "address": "", "artNumber": "4010-00050-004572-8", "sex": "F"},
+            {"name": "SONGWE FAVOURITE", "phone": "", "address": "", "artNumber": "4010-00050-005807-0", "sex": "F"},
+            {"name": "LUKWESA BISTONE", "phone": "", "address": "", "artNumber": "4060-130-01687-2", "sex": "M"},
+            {"name": "MWELWA JOYCE", "phone": "", "address": "", "artNumber": "4010-00050-005811-5", "sex": "F"},
+            {"name": "KASONGO OSIYA", "phone": "", "address": "", "artNumber": "4010-00050-005858-6", "sex": "F"},
+            {"name": "KALUMBA PRECIOUS", "phone": "", "address": "", "artNumber": "4010-00050-005391-8", "sex": "F"},
+            {"name": "KALUMBETA SIMON", "phone": "", "address": "", "artNumber": "4010-00050-005714-7", "sex": "M"},
+            {"name": "KAMBOLE HAGGAI", "phone": "", "address": "", "artNumber": "4010-00050-005210-8", "sex": "M"},
+            {"name": "MWAPE DANIEL", "phone": "", "address": "", "artNumber": "6002-00000-076620-1", "sex": "M"},
+            {"name": "MWILA ROSEMARY", "phone": "", "address": "", "artNumber": "4010-00050-002623-3", "sex": "F"},
+            {"name": "BUPE JAMES", "phone": "", "address": "", "artNumber": "4010-00050-000094-3", "sex": "M"},
+            {"name": "KATAI DYNESS", "phone": "", "address": "", "artNumber": "4010-00050-005719-2", "sex": "F"},
+            {"name": "MUSONDA COSMAS", "phone": "", "address": "", "artNumber": "4060-130-02272-3", "sex": "M"},
+            {"name": "MULENGA RUTH", "phone": "", "address": "", "artNumber": "4060-130-00695-0", "sex": "F"},
+            {"name": "KALUMBA WEBBY", "phone": "", "address": "", "artNumber": "4010-00050-005062-3", "sex": "M"},
+            {"name": "NGONGA CECILIA", "phone": "", "address": "", "artNumber": "4010-00050-004954-2", "sex": "F"},
+            {"name": "KALUMBA ISAAC", "phone": "", "address": "", "artNumber": "4060-130-03045-2", "sex": "M"},
+            {"name": "KABAMBA GIFT", "phone": "", "address": "", "artNumber": "4010-00050-005643-8", "sex": "M"},
+            {"name": "CHIWELE GETRUDE", "phone": "", "address": "", "artNumber": "4060-130-003329-7", "sex": "F"},
+            {"name": "CHILUBA MAGGIE", "phone": "", "address": "", "artNumber": "4060-130-01916-7", "sex": "F"},
+            {"name": "MALAMA JOYCE", "phone": "", "address": "", "artNumber": "4060-130-003297-1", "sex": "F"},
+            {"name": "MUNSHIMBWE DERRICK", "phone": "", "address": "", "artNumber": "4060-130-02208-2", "sex": "M"},
+            {"name": "MWILA JOYCE", "phone": "", "address": "", "artNumber": "4060-130-02538-8", "sex": "F"},
+            {"name": "MWANSA JOSEPHINE", "phone": "", "address": "", "artNumber": "4006-00130-005931-8", "sex": "F"},
+            {"name": "CHISOMONA FRIDAH", "phone": "", "address": "", "artNumber": "4010-00050-005041-0", "sex": "F"},
+            {"name": "NKANDU NANCY", "phone": "", "address": "", "artNumber": "4010-00050-005217-5", "sex": "F"},
+            {"name": "NSOFWA MAGGIE", "phone": "", "address": "", "artNumber": "4010-00050-005092-6", "sex": "F"},
+            {"name": "NGONGA JUDITH", "phone": "", "address": "", "artNumber": "4010-0017-005327-7", "sex": "F"},
+            {"name": "CHIBWE LOVENESS", "phone": "", "address": "", "artNumber": "4060-130-02648-0", "sex": "F"},
+            {"name": "MPUNDU GRACE", "phone": "", "address": "", "artNumber": "4060-130-01504-0", "sex": "F"},
+            {"name": "CHISHIMBA HARRIET", "phone": "", "address": "", "artNumber": "4010-00050-005852-0", "sex": "F"},
+            {"name": "TAMBATAMBA PHEBBY", "phone": "", "address": "", "artNumber": "4060-130-02620-0", "sex": "F"},
+            {"name": "MWAMBA LIZZY", "phone": "", "address": "", "artNumber": "4010-00050-004238-7", "sex": "F"},
+            {"name": "MUSAMA JUSTIN", "phone": "", "address": "", "artNumber": "4060-130-03116-1", "sex": "M"},
+            {"name": "MUSONDA DANIEL", "phone": "", "address": "", "artNumber": "4060-130-001622-1", "sex": "M"},
+            {"name": "KALEMBE WILSON", "phone": "", "address": "", "artNumber": "4010-00050-005796-7", "sex": "M"},
+            {"name": "MPUNDU MILIKA", "phone": "", "address": "", "artNumber": "5040-174-00903-2", "sex": "F"},
+            {"name": "MUPETA LILLIAN", "phone": "", "address": "", "artNumber": "4010-00050-005211-9", "sex": "F"},
+            {"name": "MATIPA DANNY", "phone": "", "address": "", "artNumber": "4060-130-003273-5", "sex": "M"},
+            {"name": "KAPYA ACKIM", "phone": "", "address": "", "artNumber": "4010-00050-005932-9", "sex": "M"},
+            {"name": "KABASO ROSE", "phone": "", "address": "", "artNumber": "4010-00050-001602-9", "sex": "F"},
+            {"name": "MWABA GOODSON", "phone": "", "address": "", "artNumber": "4060-130-01896-4", "sex": "M"},
+            {"name": "KANYEMBO JENIPHER", "phone": "", "address": "", "artNumber": "4060-130-02628-8", "sex": "F"},
+            {"name": "CHONGO MILDRED", "phone": "", "address": "", "artNumber": "4010-00050-005475-1", "sex": "F"},
+            {"name": "CHANDA ALBERT", "phone": "", "address": "", "artNumber": "4010-00050-005288-3", "sex": "M"},
+            {"name": "CHISHALA MARY", "phone": "", "address": "", "artNumber": "4010-00050-005816-0", "sex": "F"},
+            {"name": "CHALWE JOSEPH", "phone": "", "address": "", "artNumber": "4010-00050-005830-6", "sex": "M"},
+            {"name": "MWABA GOODSON", "phone": "", "address": "", "artNumber": "4060-130-01895-3", "sex": "M"},
+            {"name": "PHIRI ASTRIDAH", "phone": "", "address": "", "artNumber": "4010-0017-001922-4", "sex": "F"},
+            {"name": "KAOMA DYNESS", "phone": "", "address": "", "artNumber": "4060-130-003378-1", "sex": "F"},
+            {"name": "LENGWE LILIAN", "phone": "", "address": "", "artNumber": "4010-00050-003494-0", "sex": "F"},
+            {"name": "BWALYA RUTH", "phone": "", "address": "", "artNumber": "2004-0002P-041144-4", "sex": "F"},
+            {"name": "CHILUBA CAPHAS", "phone": "", "address": "", "artNumber": "4010-00050-005397-4", "sex": "M"},
+            {"name": "CHIPILI DANNY", "phone": "", "address": "", "artNumber": "4060-130-02376-8", "sex": "M"},
+            {"name": "CHANSA YVONNE", "phone": "", "address": "", "artNumber": "4010-00050-004237-6", "sex": "F"},
+            {"name": "MWABA ASTRIDA", "phone": "", "address": "", "artNumber": "4010-0006-002381-4", "sex": "F"},
+            {"name": "BWALYA GRACE", "phone": "", "address": "", "artNumber": "4010-00050-005686-5", "sex": "F"},
+            {"name": "MWILA DOROTHY", "phone": "", "address": "", "artNumber": "4010-00050-004625-7", "sex": "F"},
+            {"name": "MPUNDU GRACE", "phone": "", "address": "", "artNumber": "4060-130-003319-6", "sex": "F"},
+            {"name": "BWALYA DOCAS", "phone": "", "address": "", "artNumber": "4060-130-01794-1", "sex": "F"},
+            {"name": "MULENGA EMELE", "phone": "", "address": "", "artNumber": "4010-00050-004223-1", "sex": "F"},
+            {"name": "MWAPE GWEN", "phone": "", "address": "", "artNumber": "4002-0009-000551-1", "sex": "F"},
+            {"name": "CHIPASHA GETRUDE", "phone": "", "address": "", "artNumber": "4010-00050-005667-4", "sex": "F"},
+            {"name": "CHISHALA ANNIE", "phone": "", "address": "", "artNumber": "4010-00050-005185-9", "sex": "F"},
+            {"name": "CHANSA MELONY", "phone": "", "address": "", "artNumber": "4010-00050-001547-7", "sex": "F"},
+            {"name": "MAKUNGU ANNIBEL", "phone": "", "address": "", "artNumber": "4010-00050-005878-8", "sex": "F"},
+            {"name": "MULENGA FRIDAH", "phone": "", "address": "", "artNumber": "4060-130-02509-6", "sex": "F"},
+            {"name": "MWENYA IREEN", "phone": "", "address": "", "artNumber": "4010-00050-005503-3", "sex": "F"},
+            {"name": "CHILOMBO DYNES", "phone": "", "address": "", "artNumber": "4010-00050-005727-1", "sex": "F"},
+            {"name": "MWANSA JULIET", "phone": "", "address": "", "artNumber": "4010-00093-002771-7", "sex": "F"},
+            {"name": "MPALA CHILUFYA", "phone": "", "address": "", "artNumber": "4060-130-002871-8", "sex": "F"},
+            {"name": "MAKUNGU RICHARD", "phone": "", "address": "", "artNumber": "4010-00050-005390-7", "sex": "M"},
+            {"name": "CHITUNDU BERTHA", "phone": "", "address": "", "artNumber": "4010-00050-005231-1", "sex": "F"},
+            {"name": "MUSONDA PRECIOUS", "phone": "", "address": "", "artNumber": "4010-00050-005578-5", "sex": "F"},
+            {"name": "KASONDE STEPHEN", "phone": "", "address": "", "artNumber": "4010-00050-005832-8", "sex": "M"}
+        ];
+
+        let allClients = clientsData;
+        let currentView = 'pickup';
+        let isListVisible = false;
+        let currentSection = 'dashboard';
+        let currentFilteredData = [];
+
+        function toggleMainMenu() {
+            const overlay = document.querySelector('.menu-overlay');
+            const menuContent = document.querySelector('.menu-content');
+            
+            overlay.style.display = 'block';
+            menuContent.classList.add('active');
+        }
+
+        function closeMainMenu() {
+            const overlay = document.querySelector('.menu-overlay');
+            const menuContent = document.querySelector('.menu-content');
+            
+            overlay.style.display = 'none';
+            menuContent.classList.remove('active');
+        }
+
+        function navigateToSection(section) {
+            closeMainMenu();
+            currentSection = section;
+            
+            // Update menu item active states
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            
+            const headerTitle = document.getElementById('headerTitle');
+            const headerSubtitle = document.getElementById('headerSubtitle');
+            const backButton = document.querySelector('.back-button');
+            const statsSection = document.getElementById('statsSection');
+            const controlsSection = document.getElementById('controlsSection');
+            const clientList = document.getElementById('clientList');
+            const dashboardContent = document.getElementById('dashboardContent');
+            
+            // Hide all sections first
+            clientList.classList.remove('show');
+            controlsSection.classList.remove('show');
+            dashboardContent.classList.remove('hide');
+            isListVisible = false;
+            
+            if (section === 'dashboard') {
+                document.querySelector('.menu-item:nth-child(1)').classList.add('active');
+                headerTitle.textContent = 'Pharmacy Pickup Dashboard';
+                headerSubtitle.textContent = 'Manage and track pending pharmacy pickups';
+                backButton.classList.remove('show');
+                statsSection.style.display = 'grid';
+                dashboardContent.classList.remove('hide');
+            } else if (section === 'pharmacy') {
+                document.querySelector('.menu-item:nth-child(2)').classList.add('active');
+                headerTitle.textContent = 'Pharmacy Pickup List';
+                headerSubtitle.textContent = 'Manage and track pending pharmacy pickups';
+                backButton.classList.add('show');
+                statsSection.style.display = 'none';
+                controlsSection.classList.add('show');
+                dashboardContent.classList.add('hide');
+                currentView = 'pickup';
+                populateTable(clientsData, 'pickup');
+                clientList.classList.add('show');
+                isListVisible = true;
+            } else if (section === 'vl') {
+                document.querySelector('.menu-item:nth-child(3)').classList.add('active');
+                headerTitle.textContent = 'Viral Load Due List';
+                headerSubtitle.textContent = 'Clients due for viral load testing';
+                backButton.classList.add('show');
+                statsSection.style.display = 'none';
+                controlsSection.classList.add('show');
+                dashboardContent.classList.add('hide');
+                currentView = 'vl';
+                populateTable(vlDueData, 'vl');
+                clientList.classList.add('show');
+                isListVisible = true;
+            } else if (section === 'index') {
+                document.querySelector('.menu-item:nth-child(4)').classList.add('active');
+                headerTitle.textContent = 'Index Backlog';
+                headerSubtitle.textContent = 'Clients in index backlog queue';
+                backButton.classList.add('show');
+                statsSection.style.display = 'none';
+                controlsSection.classList.add('show');
+                dashboardContent.classList.add('hide');
+                currentView = 'index';
+                populateTable(indexBacklogData, 'index');
+                clientList.classList.add('show');
+                isListVisible = true;
+            }
+        }
+
+        function goBack() {
+            navigateToSection('dashboard');
+        }
+
+        function populateTable(clients = allClients, viewType = 'pickup') {
+            const tbody = document.getElementById('clientTableBody');
+            const headers = document.getElementById('tableHeaders');
+            tbody.innerHTML = '';
+            currentFilteredData = clients;
+            
+            // Set headers based on view type
+            if (viewType === 'pickup') {
+                headers.innerHTML = `
+                    <th>#</th>
+                    <th>Client Name</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>ART Number</th>
+                    <th>Next Visit</th>
+                    <th>Due for VL</th>
+                `;
+            } else if (viewType === 'vl') {
+                headers.innerHTML = `
+                    <th>#</th>
+                    <th>Client Name</th>
+                    <th>Phone</th>
+                    <th>ART Number</th>
+                    <th>Sex</th>
+                `;
+            } else {
+                headers.innerHTML = `
+                    <th>#</th>
+                    <th>Client Name</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>ART Number</th>
+                `;
+            }
+
+            if (clients.length === 0) {
+                const colSpan = viewType === 'pickup' ? 7 : viewType === 'vl' ? 5 : 5;
+                tbody.innerHTML = `<tr><td colspan="${colSpan}" class="no-clients">No clients match your search criteria.</td></tr>`;
+                return;
+            }
+
+            clients.forEach((client, index) => {
+                const row = document.createElement('tr');
+                const serialNumber = index + 1;
+                
+                if (viewType === 'pickup') {
+                    row.innerHTML = `
+                        <td class="serial-number">${serialNumber}</td>
+                        <td><strong>${client.name}</strong></td>
+                        <td class="phone">${client.phone || 'N/A'}</td>
+                        <td>${client.address}</td>
+                        <td class="art-number">${client.artNumber}</td>
+                        <td class="date">${client.nextVisit}</td>
+                        <td><span class="vl-badge vl-${client.vlDue.toLowerCase()}">${client.vlDue === 'Y' ? 'YES' : 'NO'}</span></td>
+                    `;
+                } else if (viewType === 'vl') {
+                    row.innerHTML = `
+                        <td class="serial-number">${serialNumber}</td>
+                        <td><strong>${client.name}</strong><span class="vl-badge-table">VL DUE</span></td>
+                        <td class="phone">${client.phone || 'N/A'}</td>
+                        <td class="art-number">${client.artNumber}</td>
+                        <td>${client.sex}</td>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <td class="serial-number">${serialNumber}</td>
+                        <td><strong>${client.name}</strong><span class="index-badge">INDEX</span></td>
+                        <td class="phone">${client.phone || 'N/A'}</td>
+                        <td>${client.address}</td>
+                        <td class="art-number">${client.artNumber}</td>
+                    `;
+                }
+                tbody.appendChild(row);
+            });
+        }
+
+        function calculateStats() {
+            const totalClients = clientsData.length;
+            const vlDueCount = vlDueData.length;
+            const indexBacklogCount = indexBacklogData.length;
+
+            document.getElementById('totalClients').textContent = totalClients;
+            document.getElementById('vlDue').textContent = vlDueCount;
+            document.getElementById('indexBacklog').textContent = indexBacklogCount;
+        }
+
+        function searchClients() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let dataToSearch;
+            
+            if (currentView === 'pickup') {
+                dataToSearch = clientsData;
+            } else if (currentView === 'vl') {
+                dataToSearch = vlDueData;
+            } else {
+                dataToSearch = indexBacklogData;
+            }
+            
+            const filteredClients = dataToSearch.filter(client => 
+                client.name.toLowerCase().includes(searchTerm) ||
+                (client.address && client.address.toLowerCase().includes(searchTerm)) ||
+                client.artNumber.toLowerCase().includes(searchTerm) ||
+                (client.phone && client.phone.toLowerCase().includes(searchTerm)) ||
+                (client.sex && client.sex.toLowerCase().includes(searchTerm))
+            );
+            
+            if (isListVisible) {
+                populateTable(filteredClients, currentView);
+            }
+        }
+
+        function downloadExcel() {
+            if (currentFilteredData.length === 0) {
+                alert('No data to download');
+                return;
+            }
+
+            let csvContent = '';
+            let filename = '';
+            
+            if (currentView === 'pickup') {
+                csvContent = 'Serial No,Client Name,Phone,Address,ART Number,Next Visit,Due for VL\n';
+                filename = 'pharmacy_pickup_list.csv';
+                currentFilteredData.forEach((client, index) => {
+                    csvContent += `${index + 1},"${client.name}","${client.phone || 'N/A'}","${client.address}","${client.artNumber}","${client.nextVisit}","${client.vlDue === 'Y' ? 'YES' : 'NO'}"\n`;
+                });
+            } else if (currentView === 'vl') {
+                csvContent = 'Serial No,Client Name,Phone,ART Number,Sex\n';
+                filename = 'viral_load_due_list.csv';
+                currentFilteredData.forEach((client, index) => {
+                    csvContent += `${index + 1},"${client.name}","${client.phone || 'N/A'}","${client.artNumber}","${client.sex}"\n`;
+                });
+            } else {
+                csvContent = 'Serial No,Client Name,Phone,Address,ART Number\n';
+                filename = 'index_backlog_list.csv';
+                currentFilteredData.forEach((client, index) => {
+                    csvContent += `${index + 1},"${client.name}","${client.phone || 'N/A'}","${client.address}","${client.artNumber}"\n`;
+                });
+            }
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function downloadPDF() {
+            if (currentFilteredData.length === 0) {
+                alert('No data to download');
+                return;
+            }
+
+            // Create a simple HTML content for PDF
+            let htmlContent = `
+                <html>
+                <head>
+                    <title>${currentView === 'pickup' ? 'Pharmacy Pickup List' : currentView === 'vl' ? 'Viral Load Due List' : 'Index Backlog List'}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h1 { color: #2c3e50; text-align: center; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; font-weight: bold; }
+                        tr:nth-child(even) { background-color: #f9f9f9; }
+                        .serial { text-align: center; font-weight: bold; }
+                        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+                    </style>
+                </head>
+                <body>
+                    <h1>${currentView === 'pickup' ? 'Pharmacy Pickup List' : currentView === 'vl' ? 'Viral Load Due List' : 'Index Backlog List'}</h1>
+                    <p>Generated on: ${new Date().toLocaleDateString()}</p>
+                    <table>
+                        <thead>
+                            <tr>
+            `;
+
+            if (currentView === 'pickup') {
+                htmlContent += '<th>#</th><th>Client Name</th><th>Phone</th><th>Address</th><th>ART Number</th><th>Next Visit</th><th>Due for VL</th>';
+            } else if (currentView === 'vl') {
+                htmlContent += '<th>#</th><th>Client Name</th><th>Phone</th><th>ART Number</th><th>Sex</th>';
+            } else {
+                htmlContent += '<th>#</th><th>Client Name</th><th>Phone</th><th>Address</th><th>ART Number</th>';
+            }
+
+            htmlContent += `
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            currentFilteredData.forEach((client, index) => {
+                htmlContent += '<tr>';
+                htmlContent += `<td class="serial">${index + 1}</td>`;
+                htmlContent += `<td>${client.name}</td>`;
+                htmlContent += `<td>${client.phone || 'N/A'}</td>`;
+                
+                if (currentView === 'pickup') {
+                    htmlContent += `<td>${client.address}</td>`;
+                    htmlContent += `<td>${client.artNumber}</td>`;
+                    htmlContent += `<td>${client.nextVisit}</td>`;
+                    htmlContent += `<td>${client.vlDue === 'Y' ? 'YES' : 'NO'}</td>`;
+                } else if (currentView === 'vl') {
+                    htmlContent += `<td>${client.artNumber}</td>`;
+                    htmlContent += `<td>${client.sex}</td>`;
+                } else {
+                    htmlContent += `<td>${client.address}</td>`;
+                    htmlContent += `<td>${client.artNumber}</td>`;
+                }
+                
+                htmlContent += '</tr>';
+            });
+
+            htmlContent += `
+                        </tbody>
+                    </table>
+                    <div class="footer">
+                        <p>Total Records: ${currentFilteredData.length}</p>
+                        <p>Pharmacy Pickup Dashboard - Generated Report</p>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            // Open in new window for printing/saving as PDF
+            const newWindow = window.open('', '_blank');
+            newWindow.document.write(htmlContent);
+            newWindow.document.close();
+            
+            // Trigger print dialog
+            setTimeout(() => {
+                newWindow.print();
+            }, 500);
+        }
+
+        // Initialize stats on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateStats();
+            // Show main dashboard by default
+            navigateToSection('dashboard');
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                if (isListVisible) {
+                    document.getElementById('searchInput').focus();
+                }
+            }
+            if (e.key === 'Escape') {
+                document.getElementById('searchInput').value = '';
+                if (isListVisible) {
+                    searchClients();
+                }
+                closeMainMenu();
+            }
+        });
+    </script>
+</body>
+</html>
